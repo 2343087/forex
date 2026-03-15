@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS (Nentuin Tipe Data Tetap/Static)
+// ==========================================
+enum Role {
+  SUPER_ADMIN     // Owner
+  FREE_MEMBER     // Akses cuma preview/lead magnet
+  VIP_MEMBER      // Akses full LMS (SMC) & Research harian
+  ANALYST         // Yang bantu upload setup/daily bias
+  CS              // Customer Support, cuma bisa view
+  FINANCE         // Ngurusin komisi affiliate & approve/reject withdraw
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+}
+
+// ==========================================
+// MODELS (Tabel Database)
+// ==========================================
+
+model User {
+  id            String    @id @default(uuid()) // Pake UUID biar susah ditebak (Security best practice)
+  email         String    @unique
+  name          String
+  password      String    // Bakal di-hash pake bcrypt
+  phoneNumber   String?   @unique // Buat blast nomor WA
+  role          Role      @default(FREE_MEMBER)
+  vipValidUntil DateTime? // Null kalau dia Free Member, ada isinya kalau dia VIP
+  referralCode  String?   @unique // Kode unik referral dia (misal: DELONSMC99)
+  referredById  String?   // ID orang yang ngajak dia
+  
+  // Audit Trail
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relasi
+  transactions  Transaction[]
+  courses       CourseAccess[]
+  researches    DailyResearch[]
+
+  // ==========================
+  // INDEXING: Bikin search data query kenceng pas user jutaan!
+  // ==========================
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([role])
+}
+
+model Course {
+  id             String    @id @default(uuid())
+  title          String
+  slug           String    @unique // URL friendly: misal /course/basic-market-structure
+  description    String?   @db.Text
+  price          Decimal   @default(0.0) // Kalau 0 berarti free lead magnet
+  isPremium      Boolean   @default(true) // Penentu VIP atau bukan
+  order          Int       @default(0)    // Urutan tonton modul (1, 2, 3)
+  
+  // Media Links (Penting: Jangan pernah expose link direct video)
+  thumbnailUrl   String?
+  videoProviderId String?  // ID dari Bunny.net atau Vimeo (Bukan URL utuh!)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relasi
+  transactions   Transaction[]
+  userAccess     CourseAccess[]
+
+  @@index([slug])
+  @@index([isPremium])
+}
+
+// Ini adalah Pivot Table untuk mencatat user mana aja yang udah punya akses ke course apa
+model CourseAccess {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  progress  Int      @default(0) // Untuk tracking LMS (0 - 100%)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  // Pastiin user ga bisa dapet akses dobel ke course yang sama
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Transaction {
+  id            String            @id @default(uuid())
+  orderId       String            @unique // ID order unik buat Midtrans/Xendit (ex: TRX-XAU-123)
+  userId        String
+  courseId      String?           // Bisa null kalau transaksinya buat upgrade VIP bulanan (bukan beli course eceran)
+  planType      String?           // Enum manual (VIP_MONTHLY, VIP_YEARLY) supaya gampang buat report
+
+  amount        Decimal
+  status        TransactionStatus @default(PENDING)
+  paymentUrl    String?           // URL redirect dari payment gateway
+  midtransData  Json?             // Simpan webhook dari midtrans mentah-mentah
+  
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relasi
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  // INDEX buat filter dashboard admin / history order biar ga lemot
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DailyResearch {
+  id          String    @id @default(uuid())
+  title       String    // Judul analisa, ex: "Setup Sell XAUUSD NFP"
+  content     String    @db.Text // Isi analisa / alasan entry
+  imageUrl    String?   // Gambar chart OANDA lu
+  isPremium   Boolean   @default(true) // Kalau true, cuma VIP yang bisa baca
+  
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([createdAt])
+}
+
