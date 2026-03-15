@@ -61,25 +61,26 @@ model User {
 model Course {
   id             String    @id @default(uuid())
   title          String
-  slug           String    @unique // URL friendly: misal /course/basic-market-structure
+  slug           String    @unique
   description    String?   @db.Text
-  price          Decimal   @default(0.0) // Kalau 0 berarti free lead magnet
-  isPremium      Boolean   @default(true) // Penentu VIP atau bukan
-  order          Int       @default(0)    // Urutan tonton modul (1, 2, 3)
+  category       String    @default("Teknikal") // Fundamental, Teknikal, Psikologi, Risk Management
+  price          Decimal   @default(0.0)
+  isPremium      Boolean   @default(true)
+  order          Int       @default(0)
+  lessonCount    Int       @default(1) // Jumlah lesson/video dalam kursus ini
   
-  // Media Links (Penting: Jangan pernah expose link direct video)
   thumbnailUrl   String?
-  videoProviderId String?  // ID dari Bunny.net atau Vimeo (Bukan URL utuh!)
+  videoProviderId String?
   
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  // Relasi
   transactions   Transaction[]
   userAccess     CourseAccess[]
 
   @@index([slug])
   @@index([isPremium])
+  @@index([category])
 }
 
 // Ini adalah Pivot Table untuk mencatat user mana aja yang udah punya akses ke course apa

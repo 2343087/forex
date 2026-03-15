@@ -103,7 +103,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../../public/uploads'))
 
 // Health Check
 app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Apex Elite API — Running & Secured 🔥', timestamp: new Date().toISOString() });
+  res.json({ message: 'Akademi Edukasi Forex API — Running & Secured 🔥', timestamp: new Date().toISOString() });
 });
 
 // ═══════════════════════════════════════
@@ -133,7 +133,7 @@ app.use((req: Request, res: Response) => {
 
 // Start Server
 app.listen(port, () => {
-  console.log(`[server]: Apex Elite API running at http://localhost:${port}`);
+  console.log(`[server]: Akademi Edukasi Forex API running at http://localhost:${port}`);
   console.log(`[server]: CORS allowed: ${allowedOrigins.join(', ')}`);
   console.log(`[server]: Rate limiting: ACTIVE ✅`);
 });

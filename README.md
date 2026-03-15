@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/APEX-ELITE-d7962d?style=for-the-badge&labelColor=0a0a0a&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNkNzk2MmQiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJMOSA5bC03IDJIOSA4aDZsLTMtNyA3LTIgNyAyeiIvPjwvc3ZnPg==" alt="Apex Elite"/>
+  <img src="https://img.shields.io/badge/Akademi-Edukasi_Forex-d7962d?style=for-the-badge&labelColor=0a0a0a&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNkNzk2MmQiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJMOSA5bC03IDJIOSA4aDZsLTMtNyA3LTIgNyAyeiIvPjwvc3ZnPg==" alt="Akademi Edukasi Forex"/>
   <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
   <img src="https://img.shields.io/badge/Express-5-black?style=for-the-badge&logo=express" alt="Express"/>
   <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" alt="Prisma"/>
@@ -17,7 +17,7 @@
 
 ## 🤔 Ini Projek Apa Sih?
 
-**Apex Elite** adalah web app (website yang bisa diakses dari HP maupun laptop) buat **belajar trading Forex secara realistis**. Ini bukan platform sinyal abal-abal yang janjiin "100 ribu jadi 100 juta". Ini tempat edukasi beneran.
+**Akademi Edukasi Forex** adalah web app (website yang bisa diakses dari HP maupun laptop) buat **belajar trading Forex secara realistis**. Ini bukan platform sinyal abal-abal yang janjiin "100 ribu jadi 100 juta". Ini tempat edukasi beneran.
 
 ### Yang Bisa Dilakukan Platform Ini:
 
@@ -170,7 +170,7 @@ npm run dev
 
 Kalau berhasil, lu bakal liat pesan:
 ```
-[server]: Apex Elite API running at http://localhost:5001
+[server]: Akademi Edukasi Forex API running at http://localhost:5001
 [server]: CORS allowed: http://localhost:3000
 [server]: Rate limiting: ACTIVE ✅
 ```
@@ -280,6 +280,6 @@ Platform ini gak cuma cakep doang. Keamanannya juga **level fortress**:
 ---
 
 <p align="center">
-  <strong>Built with ⚡ by Delongbr</strong><br/>
+  <strong>Signed, Delong The Akademi Edukasi Forex</strong><br/>
   <em>"We don't just write code. We forge systems."</em>
 </p>

@@ -5,7 +5,7 @@ import { videoService } from '../utils/bunny';
 // Buat course baru (Cuma Admin aja yang bisa, Role dicek di middleware)
 export const createCourse = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, slug, description, price, isPremium, videoProviderId, thumbnailUrl, order } = req.body;
+    const { title, slug, description, price, isPremium, videoProviderId, thumbnailUrl, order, category, lessonCount } = req.body;
 
     // Validasi Field Penting
     if (!title || !slug) {
@@ -27,6 +27,8 @@ export const createCourse = async (req: Request, res: Response): Promise<void> =
         price,
         isPremium: isPremium ?? true,
         order: order ?? 1,
+        category: category || 'Teknikal',
+        lessonCount: lessonCount || 1,
         videoProviderId,
         thumbnailUrl
       }
@@ -46,8 +48,16 @@ export const createCourse = async (req: Request, res: Response): Promise<void> =
 // Ambil semua daftar course (Katalog) - Bisa dipanggil siapa aja
 export const getAllCourses = async (req: Request, res: Response): Promise<void> => {
   try {
+    const { category } = req.query;
+    
+    const where: any = {};
+    if (category && typeof category === 'string') {
+      where.category = category;
+    }
+
     const courses = await prisma.course.findMany({
-      orderBy: { order: 'asc' },
+      where,
+      orderBy: [{ category: 'asc' }, { order: 'asc' }],
       select: {
         id: true,
         title: true,
@@ -56,8 +66,9 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
         price: true,
         isPremium: true,
         order: true,
-        thumbnailUrl: true
-        // Sengaja gak di selct videoProviderId biar ga bocor ke publik
+        category: true,
+        lessonCount: true,
+        thumbnailUrl: true,
       }
     });
 
@@ -65,6 +76,21 @@ export const getAllCourses = async (req: Request, res: Response): Promise<void> 
   } catch (error) {
     console.error('[Course Error]', error);
     res.status(500).json({ error: 'Gagal muat daftar course.' });
+  }
+};
+
+// Ambil daftar kategori unik
+export const getCourseCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await prisma.course.findMany({
+      select: { category: true },
+      distinct: ['category'],
+      orderBy: { category: 'asc' },
+    });
+    res.status(200).json(categories.map((c: any) => c.category));
+  } catch (error) {
+    console.error('[Course Categories Error]', error);
+    res.status(500).json({ error: 'Gagal muat kategori.' });
   }
 };
 
@@ -161,7 +187,7 @@ export const getCourseByIdForAdmin = async (req: Request, res: Response): Promis
 export const updateCourse = async (req: Request, res: Response): Promise<void> => {
   try {
     const courseId = req.params.id as string;
-    const { title, slug, description, price, isPremium, videoProviderId, thumbnailUrl, order } = req.body;
+    const { title, slug, description, price, isPremium, videoProviderId, thumbnailUrl, order, category, lessonCount } = req.body;
     
     // Validasi singkat
     if (!title || !slug) {
@@ -175,6 +201,8 @@ export const updateCourse = async (req: Request, res: Response): Promise<void> =
         title, slug, description, price, 
         isPremium: isPremium ?? true, 
         order: order ?? 1, 
+        category: category || 'Teknikal',
+        lessonCount: lessonCount || 1,
         videoProviderId, thumbnailUrl
       }
     });
